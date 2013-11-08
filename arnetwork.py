@@ -39,11 +39,9 @@ class ARDroneNetworkProcess(multiprocessing.Process):
     data and sends it to the IPCThread.
     """
 
-    def __init__(self, nav_pipe, video_pipe, com_pipe):
+    def __init__(self, drone):
         multiprocessing.Process.__init__(self)
-        self.nav_pipe = nav_pipe
-        self.video_pipe = video_pipe
-        self.com_pipe = com_pipe
+        self.drone = drone
 
     def run(self):
         video_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -58,7 +56,7 @@ class ARDroneNetworkProcess(multiprocessing.Process):
 
         stopping = False
         while not stopping:
-            inputready, outputready, exceptready = select.select([nav_socket, video_socket, self.com_pipe], [], [])
+            inputready, outputready, exceptready = select.select([nav_socket, video_socket], [], [])
             for i in inputready:
                 if i == video_socket:
                     while 1:
@@ -69,7 +67,7 @@ class ARDroneNetworkProcess(multiprocessing.Process):
                             # continue with the last one
                             break
                     w, h, image, t = arvideo.read_picture(data)
-                    self.video_pipe.send(image)
+                    #self.video_pipe.send(image)
                 elif i == nav_socket:
                     while 1:
                         try:
@@ -79,9 +77,11 @@ class ARDroneNetworkProcess(multiprocessing.Process):
                             # continue with the last one
                             break
                     navdata = libardrone.decode_navdata(data)
-                    self.nav_pipe.send(navdata)
+                    self.drone.navdata = navdata
+
+                    #self.nav_pipe.send(navdata)
                 elif i == self.com_pipe:
-                    _ = self.com_pipe.recv()
+                    #_ = self.com_pipe.recv()
                     stopping = True
                     break
         video_socket.close()
@@ -101,6 +101,8 @@ class IPCThread(threading.Thread):
         self.stopping = False
 
     def run(self):
+        pass
+        """
         while not self.stopping:
             inputready, outputready, exceptready = select.select([self.drone.video_pipe, self.drone.nav_pipe], [], [], 1)
             for i in inputready:
@@ -112,6 +114,7 @@ class IPCThread(threading.Thread):
                     while self.drone.nav_pipe.poll():
                         navdata = self.drone.nav_pipe.recv()
                     self.drone.navdata = navdata
+        """
 
     def stop(self):
         """Stop the IPCThread activity."""

@@ -9,6 +9,9 @@ class Pilot():
         """
         self.drone = libardrone.ARDrone()
 
+    def print_navdata(self):
+        print "Navdata is: " + str(self.drone.navdata)
+
     def test_1(self):
         """
             Initialize drone.
@@ -23,14 +26,37 @@ class Pilot():
             Measure with a compass.
         """
         time.sleep(0.5)
+
         self._takeoff()
-        time.sleep(5)
+        time.sleep(6)
+        print "Took off"
+        self.print_navdata()
+
+        print "Turning"
         ##changes the heading to the correct one
+        old_speed = self.drone.speed
+        self.drone.set_speed(old_speed*4)
+        #for i in xrange(40):
         self.drone.turn_left()
-        time.sleep(0.5)
+        #    time.sleep(0.05)
+        #time.sleep(5)
+        #for i in xrange(40):
+        #    self.drone.turn_right()
+        #    time.sleep(0.05)
+
+        print "rotating"
+        for i in xrange(3):
+            self.print_navdata()
+            time.sleep(0.3)
+        print "halting"
+        self.print_navdata()
         self.drone.hover()
-        time.sleep(5)
+
+        raw_input()
         self.drone.land();
+
+        time.sleep(2)
+        self.print_navdata()
         self.drone.halt()
 
     def fly_to_station(self, station_number):
