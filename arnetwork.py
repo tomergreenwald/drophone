@@ -26,13 +26,12 @@ This module provides access to the data provided by the AR.Drone.
 import select
 import socket
 import threading
-import multiprocessing
 
 import libardrone
 import arvideo
 
 
-class ARDroneNetworkProcess(multiprocessing.Process):
+class ARDroneNetworkProcess(threading.Thread):
     """ARDrone Network Process.
 
     This process collects data from the video and navdata port, converts the
@@ -40,7 +39,7 @@ class ARDroneNetworkProcess(multiprocessing.Process):
     """
 
     def __init__(self, drone):
-        multiprocessing.Process.__init__(self)
+        threading.Thread.__init__(self)
         self.drone = drone
 
     def run(self):
@@ -86,37 +85,3 @@ class ARDroneNetworkProcess(multiprocessing.Process):
                     break
         video_socket.close()
         nav_socket.close()
-
-
-class IPCThread(threading.Thread):
-    """Inter Process Communication Thread.
-
-    This thread collects the data from the ARDroneNetworkProcess and forwards
-    it to the ARDreone.
-    """
-
-    def __init__(self, drone):
-        threading.Thread.__init__(self)
-        self.drone = drone
-        self.stopping = False
-
-    def run(self):
-        pass
-        """
-        while not self.stopping:
-            inputready, outputready, exceptready = select.select([self.drone.video_pipe, self.drone.nav_pipe], [], [], 1)
-            for i in inputready:
-                if i == self.drone.video_pipe:
-                    while self.drone.video_pipe.poll():
-                        image = self.drone.video_pipe.recv()
-                    self.drone.image = image
-                elif i == self.drone.nav_pipe:
-                    while self.drone.nav_pipe.poll():
-                        navdata = self.drone.nav_pipe.recv()
-                    self.drone.navdata = navdata
-        """
-
-    def stop(self):
-        """Stop the IPCThread activity."""
-        self.stopping = True
-
