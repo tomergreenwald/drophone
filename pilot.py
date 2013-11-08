@@ -9,6 +9,30 @@ class Pilot():
         """
         self.drone = libardrone.ARDrone()
 
+    def test_1(self):
+        """
+            Initialize drone.
+            Take off.
+            Reach desired altitude.
+            Rotate 90 degress.
+            Land.
+            Shutdown.
+
+            Measure with wireshark packets after takeoff.
+            Measure with wireshark what the drone thinks it location is.
+            Measure with a compass.
+        """
+        time.sleep(0.5)
+        self._takeoff()
+        time.sleep(5)
+        ##changes the heading to the correct one
+        self.drone.turn_left()
+        time.sleep(0.5)
+        self.drone.hover()
+        time.sleep(5)
+        self.drone.land();
+        self.drone.halt()
+
     def fly_to_station(self, station_number):
         """
 
@@ -16,12 +40,13 @@ class Pilot():
 
         # Suppose we are at the base station and our queue is empty
         #TODO: Add a queue
-        self._init_ardrone_()
 
+        self._init_ardrone()
+        #takes of and reachs the desired altitude
         self._takeoff()
 
         target_angle, target_time_distance = self._get_location_for_station(station_number)
-
+        #changes the heading to the correct one
         self._change_heading(target_angle)
 
         self._fly_straight(target_time_distance)
@@ -34,7 +59,7 @@ class Pilot():
 
         self._change_altitude(constants.FLYING_ALTITUDE)
 
-        self._change_heading(self._fix_angle(target_angle - 360))
+        self._change_heading(self._fix_angle(target_angle - 180))
 
         self._fly_straight(target_time_distance) # Back to base
 
@@ -108,6 +133,8 @@ class Pilot():
             Takes off the plane.
         """
         self.drone.takeoff(constants.FLYING_ALTITUDE)
-
+if __name__ == '__main__':
+    p = Pilot()
+    p.test_1()
 
 
