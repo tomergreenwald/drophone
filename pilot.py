@@ -129,9 +129,13 @@ class Pilot():
         angle_diff = abs(current_angle - to_angle)
 
         # Start turning left
-        self.drone.turn_left()
+        if current_angle - to_angle > 0:
+            self.drone.turn_left()
+        else:
+            self.drone.turn_right()
 
         while(angle_diff > constants.ANGLE_MAX_DEVIATION):
+            self.print_navdata()
             current_angle = self._get_compass_angle()
             angle_diff = abs(current_angle - to_angle)
             time.sleep(constants.SAMPLE_ANGLE_CHANGE_TIME)
@@ -190,7 +194,8 @@ if __name__ == '__main__':
     p = Pilot()
     try:
         p.test_2()
-    except Exception:
+    except Exception, e:
+        print e
         p.drone.land()
         p.drone.halt()
 
