@@ -12,6 +12,23 @@ class Pilot():
     def print_navdata(self):
         print "Navdata is: " + str(self.drone.navdata)
 
+    def test_2(self):
+        self._takeoff()
+        time.sleep(6)
+        print "Took off"
+        self.print_navdata()
+        print "Turning"
+        self._change_heading(180)
+        print "Finished turning"
+        self.print_navdata()
+        time.sleep(5)
+        print "Finished turning"
+        raw_input()
+        self.drone.land();
+        time.sleep(2)
+        self.print_navdata()
+        self.drone.halt()
+
     def test_1(self):
         """
             Initialize drone.
@@ -98,6 +115,9 @@ class Pilot():
 
         self._land()
 
+    def _get_compass_angle(self):
+        return (int(self.drone.navdata[0]['psi']))%360
+
     def _change_heading(self, to_angle):
         """
             Changes the plan's heading to a specified angle
@@ -166,6 +186,10 @@ class Pilot():
         self.drone.takeoff(constants.FLYING_ALTITUDE)
 if __name__ == '__main__':
     p = Pilot()
-    p.test_1()
+    try:
+        p.test_2()
+    except Exception:
+        p.drone.land()
+        p.drone.halt()
 
 
