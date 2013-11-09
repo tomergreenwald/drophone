@@ -6,7 +6,7 @@ FLYING_SPEED_IN_METERS = 1.2
 # --- Altitude Settings --- #
 FLYING_ALTITUDE = 1500
 PICTURE_ALTITUDE = 1000
-ALTITUDE_MAX_DEVIATION = 0.2
+ALTITUDE_MAX_DEVIATION = 100
 
 # --- Angle settings --- #
 # How fast we stir
@@ -15,6 +15,7 @@ ANGLE_CHANGE_SPEED = 0.2
 ANGLE_MAX_DEVIATION = 5
 # Time between angle samples while turning
 SAMPLE_ANGLE_CHANGE_TIME = 0.01
+
 
 
 BASE_HEADING = 0

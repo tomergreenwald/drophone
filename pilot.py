@@ -13,11 +13,12 @@ class Pilot():
         print "Navdata is: " + str(self.drone.navdata)
 
     def test_4(self):
+        self.print_navdata()
         self._takeoff()
         time.sleep(6)
         print "Took off"
         self.print_navdata()
-        self._change_altitude(2000)
+        self._change_altitude(1500)
         time.sleep(5)
         print "Finished turning"
         raw_input()
@@ -203,7 +204,8 @@ class Pilot():
                 # We need to go down
                 self.drone.move_down()
 
-            while (current_deviation > constants.ALTITUDE_MAX_DEVIATION):
+            while (current_deviation > constants.ALTITUDE_MAX_DEVIATION and current_altitude < target_altitude*1.05):
+                self.print_navdata()
                 time.sleep(0.05)
                 current_altitude = self.drone.navdata[0]["altitude"]
                 current_deviation = abs(target_altitude - current_altitude)
@@ -232,7 +234,7 @@ class Pilot():
 if __name__ == '__main__':
     p = Pilot()
     try:
-        p.test_3()
+        p.test_4()
     except Exception, e:
         print e
         p.drone.land()
