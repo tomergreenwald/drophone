@@ -44,13 +44,18 @@ class Pilot():
         #    self.drone.turn_right()
         #    time.sleep(0.05)
 
+        initial_angle = int(self.drone.navdata[0]['psi'])
         print "rotating"
         for i in xrange(3):
             self.print_navdata()
             time.sleep(0.3)
         print "halting"
-        self.print_navdata()
         self.drone.hover()
+        time.sleep(0.5)
+        print "landing data"
+        self.print_navdata()
+        final_angle = int(self.drone.navdata[0]['psi'])
+        print "rotated", abs(initial_angle-final_angle)
 
         raw_input()
         self.drone.land();
