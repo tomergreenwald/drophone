@@ -62,8 +62,6 @@ class ARDrone(object):
         self.com_pipe, com_pipe_other = multiprocessing.Pipe()
         self.network_process = arnetwork.ARDroneNetworkProcess(self)#nav_pipe_other, video_pipe_other, com_pipe_other)
         self.network_process.start()
-        #self.ipc_thread = arnetwork.IPCThread(self)
-        #self.ipc_thread.start()
         self.image = ""
         self.navdata = dict()
         self.time = 0

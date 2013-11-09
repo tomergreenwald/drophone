@@ -66,7 +66,7 @@ class ARDroneNetworkProcess(threading.Thread):
                             # continue with the last one
                             break
                     w, h, image, t = arvideo.read_picture(data)
-                    #self.video_pipe.send(image)
+                    self.drone.image = image
                 elif i == nav_socket:
                     while 1:
                         try:
