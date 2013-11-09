@@ -15,6 +15,8 @@ class Pilot():
     def test_2(self):
         self._takeoff()
         time.sleep(6)
+        old_speed = self.drone.speed
+        self.drone.set_speed(old_speed*4)
         print "Took off"
         self.print_navdata()
         print "Turning"
