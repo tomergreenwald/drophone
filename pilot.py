@@ -12,18 +12,19 @@ class Pilot():
     def print_navdata(self):
         print "Navdata is: " + str(self.drone.navdata)
 
-    def test_2(self):
+    def test_3(self):
         self._takeoff()
         time.sleep(6)
-        old_speed = self.drone.speed
-        self.drone.set_speed(old_speed*4)
+        #old_speed = self.drone.speed
+        #self.drone.set_speed(old_speed*2/3)
         print "Took off"
         self.print_navdata()
         print "Turning"
-        self._change_heading(300)
+        #self._change_heading(300)
         print "Finished turning"
         self.print_navdata()
-        self._fly_straight(0.5)
+        raw_input()
+        self._fly_straight(2)
         time.sleep(5)
         print "Finished turning"
         raw_input()
