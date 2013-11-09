@@ -12,6 +12,20 @@ class Pilot():
     def print_navdata(self):
         print "Navdata is: " + str(self.drone.navdata)
 
+    def test_4(self):
+        self._takeoff()
+        time.sleep(6)
+        print "Took off"
+        self.print_navdata()
+        self._change_altitude(2000)
+        time.sleep(5)
+        print "Finished turning"
+        raw_input()
+        self.drone.land();
+        time.sleep(2)
+        self.print_navdata()
+        self.drone.halt()
+
     def test_3(self):
         self._takeoff()
         time.sleep(6)
@@ -112,17 +126,17 @@ class Pilot():
         # Suppose we are at the base station and our queue is empty
         #TODO: Add a queue
 
-        self._init_ardrone()
         #takes of and reachs the desired altitude
         self._takeoff()
 
-        target_angle, target_time_distance = self._get_location_for_station(station_number)
+        target_angle, target_time_to_fly = self._get_location_for_station(station_number)
+
         #changes the heading to the correct one
         self._change_heading(target_angle)
 
-        self._fly_straight(target_time_distance)
+        self._fly_straight(target_time_to_fly)
 
-        self._fix_on_qr()
+        #._fix_on_qr()
 
         self._change_altitude(constants.PICTURE_ALTITUDE)
 
@@ -132,7 +146,7 @@ class Pilot():
 
         self._change_heading(self._fix_angle(target_angle - 180))
 
-        self._fly_straight(target_time_distance) # Back to base
+        self._fly_straight(target_time_to_fly) # Back to base
 
         self._change_heading(constants.BASE_HEADING)
 
@@ -190,7 +204,7 @@ class Pilot():
                 self.drone.move_down()
 
             while (current_deviation > constants.ALTITUDE_MAX_DEVIATION):
-                time.sleep(0.2)
+                time.sleep(0.05)
                 current_altitude = self.drone.navdata[0]["altitude"]
                 current_deviation = abs(target_altitude - current_altitude)
 
@@ -200,17 +214,21 @@ class Pilot():
         """
             Gets the location for the
         """
-        station = [x for x in constants.STATIONS if x["station_name"] == station_name][0]
-        target_angle = station["angle_from_base"]
-        target_time_distance = station[constants.FLYING_SPEED / "distance_from_base"]
+        station = constants.STATIONS[station_name]
+        target_angle = station["angle"]
+        distance = station["distance"]
+        time_to_fly = distance / constants.FLYING_SPEED_IN_MPS
 
-        return target_angle, target_time_distance
+        return target_angle, time_to_fly
+
+    #self._take_photo()
 
     def _takeoff(self):
         """
             Takes off the plane.
         """
         self.drone.takeoff(constants.FLYING_ALTITUDE)
+        time.sleep(6)
 if __name__ == '__main__':
     p = Pilot()
     try:
