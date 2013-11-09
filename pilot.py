@@ -20,6 +20,26 @@ class Pilot():
         print "Took off"
         self.print_navdata()
         print "Turning"
+        self._change_heading(300)
+        print "Finished turning"
+        self.print_navdata()
+        self._fly_straight(0.5)
+        time.sleep(5)
+        print "Finished turning"
+        raw_input()
+        self.drone.land();
+        time.sleep(2)
+        self.print_navdata()
+        self.drone.halt()
+
+    def test_2(self):
+        self._takeoff()
+        time.sleep(6)
+        old_speed = self.drone.speed
+        self.drone.set_speed(old_speed*4)
+        print "Took off"
+        self.print_navdata()
+        print "Turning"
         self._change_heading(180)
         print "Finished turning"
         self.print_navdata()
@@ -193,7 +213,7 @@ class Pilot():
 if __name__ == '__main__':
     p = Pilot()
     try:
-        p.test_2()
+        p.test_3()
     except Exception, e:
         print e
         p.drone.land()
