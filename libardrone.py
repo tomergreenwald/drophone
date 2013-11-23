@@ -57,11 +57,14 @@ class ARDrone(object):
         self.lock = threading.Lock()
         self.speed = 0.2
         self.at(at_config, "general:navdata_demo", "TRUE")
+        self.at(at_config, "network:video_port", "5555")
+        self.at(at_config, "video:video_channel", "2")
+        self.at(at_config, "general:video_enable", "TRUE")
         self.video_pipe, video_pipe_other = multiprocessing.Pipe()
         self.nav_pipe, nav_pipe_other = multiprocessing.Pipe()
         self.com_pipe, com_pipe_other = multiprocessing.Pipe()
-        self.network_process = arnetwork.ARDroneNetworkProcess(self)#nav_pipe_other, video_pipe_other, com_pipe_other)
-        self.network_process.start()
+        arnetwork.NavReadingThread(self).start()
+        arnetwork.VideoReadingThread(self).start()
         self.image = ""
         self.navdata = dict()
         self.time = 0

@@ -31,7 +31,29 @@ import libardrone
 import arvideo
 
 
-class ARDroneNetworkProcess(threading.Thread):
+class VideoReadingThread(threading.Thread):
+
+    def __init__(self, drone):
+        threading.Thread.__init__(self)
+        self.drone = drone
+        self.video_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    def run(self):
+        self.video_socket.connect(('192.168.1.1', libardrone.ARDRONE_VIDEO_PORT))
+        """
+        while 1:
+            try:
+                data = self.video_socket.recv(55000)
+                print len(data)
+                w, h, image, t = arvideo.read_picture(data)
+                self.drone.image = image
+                print "Read a video packet, boom!"
+            except Exception:
+                print "Did not manage to do the pic"
+        """
+
+
+class NavReadingThread(threading.Thread):
     """ARDrone Network Process.
 
     This process collects data from the video and navdata port, converts the
@@ -43,11 +65,6 @@ class ARDroneNetworkProcess(threading.Thread):
         self.drone = drone
 
     def run(self):
-        video_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        video_socket.setblocking(0)
-        video_socket.bind(('', libardrone.ARDRONE_VIDEO_PORT))
-        video_socket.sendto("\x01\x00\x00\x00", ('192.168.1.1', libardrone.ARDRONE_VIDEO_PORT))
-
         nav_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         nav_socket.setblocking(0)
         nav_socket.bind(('', libardrone.ARDRONE_NAVDATA_PORT))
@@ -55,33 +72,16 @@ class ARDroneNetworkProcess(threading.Thread):
 
         stopping = False
         while not stopping:
-            inputready, outputready, exceptready = select.select([nav_socket, video_socket], [], [])
+            inputready, outputready, exceptready = select.select([nav_socket], [], [])
             for i in inputready:
-                if i == video_socket:
-                    while 1:
-                        try:
-                            data = video_socket.recv(65535)
-                        except IOError:
-                            # we consumed every packet from the socket and
-                            # continue with the last one
-                            break
-                    w, h, image, t = arvideo.read_picture(data)
-                    self.drone.image = image
-                elif i == nav_socket:
-                    while 1:
-                        try:
-                            data = nav_socket.recv(65535)
-                        except IOError:
-                            # we consumed every packet from the socket and
-                            # continue with the last one
-                            break
-                    navdata = libardrone.decode_navdata(data)
-                    self.drone.navdata = navdata
+                while 1:
+                    try:
+                        data = nav_socket.recv(65535)
+                    except IOError:
+                        # we consumed every packet from the socket and
+                        # continue with the last one
+                        break
+                navdata = libardrone.decode_navdata(data)
+                self.drone.navdata = navdata
 
-                    #self.nav_pipe.send(navdata)
-                elif i == self.com_pipe:
-                    #_ = self.com_pipe.recv()
-                    stopping = True
-                    break
-        video_socket.close()
         nav_socket.close()

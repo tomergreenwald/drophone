@@ -1,6 +1,8 @@
 import libardrone
 import constants
 import time
+import Image
+
 class Pilot():
 
     def __init__(self):
@@ -15,10 +17,14 @@ class Pilot():
     def test_4(self):
         self.print_navdata()
         self._takeoff()
-        time.sleep(6)
+
         print "Took off"
         self.print_navdata()
-        self._change_altitude(1500)
+        #self._change_altitude(1500)
+
+        f = open(r'c:\temp\image.raw', 'wb')
+        f.write(self.drone.image)
+        f.close()
         time.sleep(5)
         print "Finished turning"
         raw_input()
@@ -128,30 +134,50 @@ class Pilot():
         #TODO: Add a queue
 
         #takes of and reachs the desired altitude
+        print "takeoff"
         self._takeoff()
+
+
+        self.print_navdata()
+        if (len(self.drone.navdata) == 0):
+            self.drone.land()
+            self.drone.halt()
+            exit(0)
+        print "change altitude"
+        self._change_altitude(constants.FLYING_ALTITUDE)
 
         target_angle, target_time_to_fly = self._get_location_for_station(station_number)
 
         #changes the heading to the correct one
+        print "change heading"
         self._change_heading(target_angle)
 
+        print "fly straight"
         self._fly_straight(target_time_to_fly)
 
         #._fix_on_qr()
 
+        print "change altitude to picture"
         self._change_altitude(constants.PICTURE_ALTITUDE)
-
-        self._take_photo()
-
+        time.sleep(2)
+        #self._take_photo()
+        print "taking photo"
+        print "resuming flight altitude"
         self._change_altitude(constants.FLYING_ALTITUDE)
 
-        self._change_heading(self._fix_angle(target_angle - 180))
-
+        print "rotating home"
+        self._change_heading((target_angle - 180)%360)
+        print "flying home"
         self._fly_straight(target_time_to_fly) # Back to base
 
-        self._change_heading(constants.BASE_HEADING)
-
+        #self._change_heading(constants.BASE_HEADING)
+        print "landing"
         self._land()
+
+    def _land(self):
+        self.drone.land();
+        time.sleep(5)
+        self.drone.halt()
 
     def _get_compass_angle(self):
         return (int(self.drone.navdata[0]['psi']))%360
@@ -193,23 +219,29 @@ class Pilot():
             Lowers the plane's altitude to a specified level
         """
         # Frame with tag-id 0 is the one with the position data
-        current_altitude = self.drone.navdata[0]["altitude"]
+        self.print_navdata()
+        print "Changing altitude to " + str(target_altitude)
+        current_altitude = int(self.drone.navdata[0]["altitude"])
+        print "Current altitude is " + str(current_altitude)
         current_deviation = abs(target_altitude - current_altitude)
 
         if (current_deviation > constants.ALTITUDE_MAX_DEVIATION):
             if (target_altitude - current_altitude > 0):
                 # We need to go up
                 self.drone.move_up()
+                print "Moving up"
             else:
                 # We need to go down
                 self.drone.move_down()
+                print "Moving down"
 
-            while (current_deviation > constants.ALTITUDE_MAX_DEVIATION and current_altitude < target_altitude*1.05):
-                self.print_navdata()
+            while (current_deviation > constants.ALTITUDE_MAX_DEVIATION and current_altitude < target_altitude):
                 time.sleep(0.05)
-                current_altitude = self.drone.navdata[0]["altitude"]
+                current_altitude = int(self.drone.navdata[0]["altitude"])
                 current_deviation = abs(target_altitude - current_altitude)
+                print "Current altitude is " + str(current_altitude )+ ". Current deviation is " + str(current_deviation)
 
+        print "Hovering"
         self.drone.hover()
 
     def _get_location_for_station(self, station_name):
@@ -217,9 +249,9 @@ class Pilot():
             Gets the location for the
         """
         station = constants.STATIONS[station_name]
-        target_angle = station["angle"]
+        target_angle = int(station["angle"])
         distance = station["distance"]
-        time_to_fly = distance / constants.FLYING_SPEED_IN_MPS
+        time_to_fly = float(distance) / constants.FLYING_SPEED_IN_MPS
 
         return target_angle, time_to_fly
 
@@ -234,7 +266,14 @@ class Pilot():
 if __name__ == '__main__':
     p = Pilot()
     try:
-        p.test_4()
+        p.fly_to_station("station1")
+        """
+        p.print_navdata()
+        time.sleep(5)
+        p.print_navdata()
+        open(r'c:\temp\img.raw', 'wb').write(p.drone.image)
+        import sys; sys.exit(0)
+        """
     except Exception, e:
         print e
         p.drone.land()

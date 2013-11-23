@@ -1,10 +1,10 @@
 
 # --- Flying settings --- #
 FLYING_SPEED = 0.2
-FLYING_SPEED_IN_METERS = 1.2
+FLYING_SPEED_IN_MPS = 1.2
 
 # --- Altitude Settings --- #
-FLYING_ALTITUDE = 1500
+FLYING_ALTITUDE = 500
 PICTURE_ALTITUDE = 1000
 ALTITUDE_MAX_DEVIATION = 100
 
@@ -20,5 +20,5 @@ SAMPLE_ANGLE_CHANGE_TIME = 0.01
 
 BASE_HEADING = 0
 STATIONS =  {"station1" : { \
-              "angle" : "200",\
-              "distance_from_base" : "24"}}
+              "angle" : "267",\
+              "distance" : "5"}}
