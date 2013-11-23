@@ -11,6 +11,12 @@ class Pilot():
         """
         self.drone = libardrone.ARDrone()
 
+    def test_photo(self):
+        import Image
+        time.sleep(5)
+        im = Image.fromstring("RGB", (640, 360), self.drone.image)
+        im.show()
+
     def print_navdata(self):
         print "Navdata is: " + str(self.drone.navdata)
 
@@ -266,7 +272,8 @@ class Pilot():
 if __name__ == '__main__':
     p = Pilot()
     try:
-        p.fly_to_station("station1")
+        #p.fly_to_station("station1")
+        p.test_photo()
         """
         p.print_navdata()
         time.sleep(5)

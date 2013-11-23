@@ -31,6 +31,8 @@ import libardrone
 import arvideo
 
 
+import arvideo2
+
 class VideoReadingThread(threading.Thread):
 
     def __init__(self, drone):
@@ -40,17 +42,17 @@ class VideoReadingThread(threading.Thread):
 
     def run(self):
         self.video_socket.connect(('192.168.1.1', libardrone.ARDRONE_VIDEO_PORT))
-        """
+        video2 = arvideo2.ARVideo2(self.drone)
         while 1:
             try:
                 data = self.video_socket.recv(55000)
-                print len(data)
-                w, h, image, t = arvideo.read_picture(data)
-                self.drone.image = image
-                print "Read a video packet, boom!"
+                #print len(data)
+
+                video2.write(data)
             except Exception:
-                print "Did not manage to do the pic"
-        """
+                import traceback
+                traceback.print_exc()
+
 
 
 class NavReadingThread(threading.Thread):

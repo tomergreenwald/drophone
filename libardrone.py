@@ -33,6 +33,7 @@ import threading
 import multiprocessing
 
 import arnetwork
+import threading
 
 
 __author__ = "Bastian Venthur"
@@ -65,9 +66,10 @@ class ARDrone(object):
         self.com_pipe, com_pipe_other = multiprocessing.Pipe()
         arnetwork.NavReadingThread(self).start()
         arnetwork.VideoReadingThread(self).start()
-        self.image = ""
         self.navdata = dict()
         self.time = 0
+        self.image = ""
+        self.image_shape = (360, 640)
 
     def takeoff(self, altitude):
         """Make the drone takeoff."""
