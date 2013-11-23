@@ -168,8 +168,7 @@ class ARDrone(object):
         self.com_watchdog_timer.cancel()
         self.com_pipe.send('die!')
         self.network_process.terminate()
-        self.network_process.join()
-        self.ipc_thread.stop()
+        self.network_process.joinelf.ipc_thread.stop()
         self.ipc_thread.join()
         self.lock.release()
 

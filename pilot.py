@@ -2,6 +2,7 @@ import libardrone
 import constants
 import time
 import Image
+import Image
 
 class Pilot():
 
@@ -11,11 +12,13 @@ class Pilot():
         """
         self.drone = libardrone.ARDrone()
 
-    def test_photo(self):
-        import Image
-        time.sleep(5)
+    def take_photo(self):
         im = Image.fromstring("RGB", (640, 360), self.drone.image)
-        im.show()
+        import os
+        path = os.path.expandvars(r"%SYSTEMDRIVE%\tomer\drone_photos")
+        if not os.path.exists(path):
+            os.makedirs(path)
+        im.save(os.path.join(path, "fuck.jpg"), "jpeg")
 
     def print_navdata(self):
         print "Navdata is: " + str(self.drone.navdata)
@@ -166,7 +169,7 @@ class Pilot():
         print "change altitude to picture"
         self._change_altitude(constants.PICTURE_ALTITUDE)
         time.sleep(2)
-        #self._take_photo()
+        self._take_photo()
         print "taking photo"
         print "resuming flight altitude"
         self._change_altitude(constants.FLYING_ALTITUDE)
